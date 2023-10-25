@@ -1,0 +1,10 @@
+raw_data/
+.ipynb_checkpoints/
+
+chromedriver-win64/
+venv/
+chromedriver.exe
+cve*
+.idea/
+*.zip
+LICENSE.chromedriver

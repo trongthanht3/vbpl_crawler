@@ -1,0 +1,63 @@
+import os
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+from tqdm import tqdm
+import json
+import pandas as pd
+import time
+
+options = Options()
+options.add_argument("--incognito")
+options.add_argument("--window-size=1920x1080")
+# options.add_argument("start-maximized")
+# options.add_argument("enable-automation")
+# options.add_argument("--headless")
+options.add_argument("--disable-extensions");
+options.add_argument("--dns-prefetch-disable");
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-browser-side-navigation")
+options.add_argument("--disable-gpu")
+driver = webdriver.Chrome(chrome_options=options, executable_path="./chromedriver.exe")
+
+
+def crawl_text(url):
+    try:
+        driver.get(url)
+        WebDriverWait(driver, 1)
+        content = driver.find_element(By.XPATH, '//*[@id="toanvancontent"]')
+        print(content)
+        text = content.text
+
+        text = text.replace("  ", "")
+
+        return text
+    except Exception as e:
+        print(e)
+        return ""
+
+
+if __name__ == '__main__':
+    df = pd.read_csv("./raw_data/df_law_corpus_soft_processed.csv", index_col=0)
+    # content = crawl_text(df.at[0, "url"])
+    # print(content)
+    try:
+        for i in tqdm(range(0, len(df))):
+            content = crawl_text(df.iloc[i]["url"])
+            df.at[i, "content"] = content
+            if content != "":
+                df.at[i, "is_content"] = True
+            # temp_d = crawl_vbpl_each_link_text_only(i)
+            # df = pd.concat([df, temp_d])
+        driver.close()
+        print("Good job! Done and saving to csv")
+        df.to_csv("./raw_data/raw_VBPL_corpus.csv")
+    except Exception as e:
+        print(e)
+        print("ERROR DUMP at index {}! Saving to csv".format(i));
+        df.to_csv("./raw_data/raw_VBPL_corpus.csv")
