@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import winsound
 
 from tqdm import tqdm
 import json
@@ -29,13 +30,13 @@ driver = webdriver.Chrome(chrome_options=options, executable_path="./chromedrive
 def crawl_text(url):
     try:
         driver.get(url)
-        WebDriverWait(driver, 1)
+        WebDriverWait(driver, 0.2)
+    # driver.set_page_load_timeout(5)
+
+        driver.set_page_load_timeout(5)
         content = driver.find_element(By.XPATH, '//*[@id="toanvancontent"]')
-        print(content)
         text = content.text
-
         text = text.replace("  ", "")
-
         return text
     except Exception as e:
         print(e)
@@ -43,11 +44,12 @@ def crawl_text(url):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv("./raw_data/df_law_corpus_soft_processed.csv", index_col=0)
+    df = pd.read_csv("./raw_data/df_law_corpus_soft_processed.csv")
+    df['content'] = df['content'].astype(str)
     # content = crawl_text(df.at[0, "url"])
     # print(content)
     try:
-        for i in tqdm(range(0, len(df))):
+        for i in tqdm(range(350, len(df))):
             content = crawl_text(df.iloc[i]["url"])
             df.at[i, "content"] = content
             if content != "":
@@ -56,8 +58,14 @@ if __name__ == '__main__':
             # df = pd.concat([df, temp_d])
         driver.close()
         print("Good job! Done and saving to csv")
-        df.to_csv("./raw_data/raw_VBPL_corpus.csv")
+        df.to_csv("./raw_data/df_law_corpus_soft_processed.csv", index=False)
     except Exception as e:
         print(e)
-        print("ERROR DUMP at index {}! Saving to csv".format(i));
-        df.to_csv("./raw_data/raw_VBPL_corpus.csv")
+        print("ERROR DUMP at index {}! Saving to csv".format(i))
+        df.to_csv("./raw_data/df_law_corpus_soft_processed.csv", index=False)
+        winsound.PlaySound("./oof.mp3", winsound.SND_ALIAS)
+    except KeyboardInterrupt:
+        print(e)
+        print("ERROR DUMP at index {}! Saving to csv".format(i))
+        df.to_csv("./raw_data/df_law_corpus_soft_processed.csv", index=False)
+        winsound.PlaySound("./oof.mp3", winsound.SND_ALIAS)
