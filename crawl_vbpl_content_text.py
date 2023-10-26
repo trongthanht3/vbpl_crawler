@@ -65,7 +65,6 @@ if __name__ == '__main__':
         df.to_csv("./raw_data/df_law_corpus_soft_processed.csv", index=False)
         winsound.PlaySound("./oof.mp3", winsound.SND_ALIAS)
     except KeyboardInterrupt:
-        print(e)
         print("ERROR DUMP at index {}! Saving to csv".format(i))
         df.to_csv("./raw_data/df_law_corpus_soft_processed.csv", index=False)
         winsound.PlaySound("./oof.mp3", winsound.SND_ALIAS)
