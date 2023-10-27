@@ -8,3 +8,4 @@ cve*
 .idea/
 *.zip
 LICENSE.chromedriver
+data_final/
