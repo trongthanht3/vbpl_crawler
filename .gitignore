@@ -9,3 +9,4 @@ cve*
 *.zip
 LICENSE.chromedriver
 data_final/
+training_data/
